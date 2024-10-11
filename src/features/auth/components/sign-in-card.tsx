@@ -18,31 +18,22 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import Link from "next/link"
-
-const formSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .min(1, {
-      message: "Email is required",
-    })
-    .email(),
-  password: z.string().min(8, {
-    message: "Password must be at least 8 characters",
-  }),
-})
+import { signInFormSchema } from "../schemas"
+import { useSignIn } from "../service/use-sign-in"
 
 export function SignInCard() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const { mutate } = useSignIn()
+
+  const form = useForm<z.infer<typeof signInFormSchema>>({
+    resolver: zodResolver(signInFormSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   })
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values)
+  const onSubmit = (values: z.infer<typeof signInFormSchema>) => {
+    mutate({ json: values })
   }
 
   return (
@@ -91,7 +82,7 @@ export function SignInCard() {
               )}
             />
 
-            <Button disabled={false} size="lg" className="w-full">
+            <Button type="submit" disabled={false} size="lg" className="w-full">
               Sign In
             </Button>
           </form>
